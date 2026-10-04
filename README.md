@@ -25,7 +25,7 @@ FastAPI, and cloud deployment.
 
 ### Daily Quantitative Ranking
 
-系統可掃描台股市場，依照模型預測機率產生
+系統於每個開盤日下午5：00自動收集完法人資料跑完模型自動推播，依照模型預測機率產生
 每日做多與做空 Top 5。
 
 ![Daily Top 5](linebot_top5.png)
