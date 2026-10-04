@@ -10,7 +10,7 @@ FastAPI, and cloud deployment.
 
 系統使用過去 **20 個交易日 × 16 個特徵**，
 預測個股未來 **5 個交易日**的價格方向，
-並將模型輸出轉換為 LONG、NEUTRAL、SHORT 訊號。
+並將模型輸出轉換為多空訊號。
 
 ---
 
