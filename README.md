@@ -1,11 +1,11 @@
-# Taiwan Stock Quantitative Analysis & LINE Bot
+# Stock Quantitative Analysis & LINE Bot
 
 A quantitative analysis system for the Taiwan stock market integrating
-technical indicators, institutional trading data, machine learning,
-deep learning, LINE Bot, FastAPI, and cloud deployment.
+feature engineering, machine learning, deep learning, LINE Bot,
+FastAPI, and cloud deployment.
 
-本專案建立一套台股短線量化分析系統，從市場資料蒐集、特徵工程、
-模型比較、Transformer 預測，到 LINE Bot 實際應用與雲端部署，
+本專案建立一套台股短線量化分析系統，從資料蒐集、特徵工程、
+模型比較與 Transformer 預測，到 LINE Bot 實際應用，
 完成一套 End-to-End 的量化分析流程。
 
 系統使用過去 **20 個交易日 × 16 個特徵**，
@@ -18,31 +18,15 @@ deep learning, LINE Bot, FastAPI, and cloud deployment.
 
 ### Single Stock Analysis
 
-輸入股票代號後，系統會回傳：
-
-- 股票名稱
-- 模型方向
-- 模型走多 / 走空機率
-- 目前價格
-- 參考進場價
-- 停損價
-- 停利價
-- 資料日期
+輸入股票代號後，系統會回傳模型方向、走多 / 走空機率、
+目前價格，以及進場、停損與停利參考資訊。
 
 ![Single Stock Analysis](linebot_single_stock.png)
 
 ### Daily Quantitative Ranking
 
-系統可掃描台股市場，依照模型預測結果產生每日：
-
-- 做多 Top 5
-- 做空 Top 5
-- 模型方向機率
-- 進場價格
-- 停損價格
-- 停利價格
-
-並透過 LINE Bot 自動推播。
+系統可掃描台股市場，依照模型預測機率產生
+每日做多與做空 Top 5。
 
 ![Daily Top 5](linebot_top5.png)
 
@@ -50,29 +34,26 @@ deep learning, LINE Bot, FastAPI, and cloud deployment.
 
 ## Try the LINE Bot
 
-Scan the QR code below to add the LINE Bot and test the quantitative analysis system.
+Scan the QR code below to add the LINE Bot and test the system.
 
 ![LINE Bot QR Code](linebot_QRcode.png)
 
-> The LINE Bot is provided for project demonstration and research purposes only.
+> For academic and project demonstration purposes only.
 
 ---
 
 ## Project Overview
 
-本專案的目標並非只建立單一預測模型，而是完成一套可實際操作的
-台股量化分析系統。
-
-整體流程：
-
 ```text
-Taiwan Stock Market Data
+Stock Price Data
+        +
+TAIEX Market Data
         +
 Institutional Trading Data
         ↓
-Data Cleaning
-        ↓
 Feature Engineering
+        ↓
+20-Day Time Series
         ↓
 Model Training & Comparison
         ↓
@@ -82,8 +63,6 @@ Probability Prediction
         ↓
 LONG / NEUTRAL / SHORT
         ↓
-Risk Management Levels
-        ↓
 FastAPI
         ↓
 LINE Bot
@@ -91,52 +70,24 @@ LINE Bot
 Cloud Deployment
 ```
 
-專案涵蓋：
-
-- 台股歷史行情資料處理
-- 技術指標建構
-- 大盤資訊整合
-- 法人籌碼資料整合
-- 時間序列特徵工程
-- Machine Learning 模型比較
-- Deep Learning 模型比較
-- Transformer 模型建立
-- Out-of-sample Test
-- 全市場股票掃描
-- LINE Bot 串接
-- FastAPI API
-- Google Cloud 部署
+本專案不只建立預測模型，也將模型整合至實際可使用的 LINE Bot，
+並完成全市場股票掃描與雲端部署。
 
 ---
 
 ## Prediction Task
 
-The prediction task is formulated as a binary classification problem.
-
 模型使用：
 
 ```text
-Past 20 trading days
-        ↓
-16 features per day
-        ↓
-20 × 16 time-series input
-        ↓
-Predict next 5 trading days
-```
+Input:
+20 trading days × 16 features
 
-預測目標：
+Prediction Horizon:
+5 trading days
 
-```text
-Target = 1 → Future price direction is upward
-Target = 0 → Future price direction is downward
-```
-
-最終模型輸出：
-
-```text
-prob_up   = Probability of upward movement
-prob_down = Probability of downward movement
+Output:
+Probability of upward movement
 ```
 
 交易方向設定：
@@ -147,52 +98,27 @@ prob_up <= 0.30  → SHORT
 otherwise        → NEUTRAL
 ```
 
+最終模型的輸入設定為 20 個交易日、16 個特徵，
+並預測未來 5 個交易日方向。
+
 ---
 
 ## Feature Engineering
 
-最終模型使用 **16 個特徵**，分成四大類：
-
-### 1. Price & Return Features
+最終模型使用 **16 個特徵**，整合價格、趨勢、成交量、
+大盤與法人籌碼資訊：
 
 ```text
 return_1d
 return_5d
 high_low_range
-```
-
-用於描述短期報酬與每日價格波動範圍。
-
-### 2. Trend & Technical Features
-
-```text
 MA5_MA20_gap
 MA20_MA60_gap
 MACD_hist
 BB_position
 volatility_5d
-```
-
-捕捉：
-
-- 短中期均線趨勢
-- MACD 動能
-- Bollinger Band 相對位置
-- 短期波動程度
-
-### 3. Volume Features
-
-```text
 volume_ratio_5
 volume_ratio_20
-```
-
-比較目前成交量與近期平均成交量，
-用來衡量市場交易活躍程度。
-
-### 4. Market & Institutional Features
-
-```text
 TAIEX_return_1d
 TAIEX_return_5d
 foreign_net_ratio
@@ -201,35 +127,14 @@ foreign_net_ratio_5d
 trust_net_ratio_5d
 ```
 
-將個股資訊與：
-
-- 台灣加權指數
-- 外資買賣超
-- 投信買賣超
-
-進行整合，使模型同時考慮技術面、整體市場環境與法人籌碼。
-
----
-
-## Model Development
-
-專案並非直接採用單一模型，而是比較多種 Machine Learning
-與 Deep Learning 架構。
-
-實驗模型包括：
-
-- Logistic Regression
-- XGBoost
-- GRU
-- GRU + Attention
-- Transformer
-
-模型以 Validation Set 進行調整，
-並另外保留 Test Set 評估模型在未見資料上的表現。
+透過這些特徵，使模型同時考量個股技術面、
+市場整體走勢與法人交易行為。
 
 ---
 
 ## Model Comparison
+
+本專案比較傳統 Machine Learning 與 Deep Learning 模型：
 
 | Model | Validation Accuracy | Validation AUC | Test Accuracy | Test AUC |
 |---|---:|---:|---:|---:|
@@ -243,104 +148,50 @@ Although GRU achieved the highest Validation AUC,
 its performance decreased on the independent Test Set.
 
 The Transformer achieved the highest **Test AUC = 0.7516**,
-showing better out-of-sample ranking ability among the evaluated models.
+therefore it was selected as the final model. 
 
-Therefore, Transformer was selected as the final model.
-
-> **Note:** Test AUC = 0.7516 does not mean a 75.16% prediction accuracy.
-> AUC measures the model's ability to distinguish and rank positive and
-> negative outcomes across probability thresholds.
+> Test AUC = 0.7516 does not mean 75.16% prediction accuracy.
+> AUC measures the model's ability to distinguish and rank outcomes.
 
 ---
 
 ## Final Transformer Model
 
-Final model configuration:
-
 ```text
-Model: Transformer
-
-Input:
-20 trading days × 16 features
-
-Output:
-1 probability
-
-Prediction Horizon:
-5 trading days
-```
-
-Architecture:
-
-```text
-Input
-  ↓
+20-Day Sequence
+        ↓
 Multi-Head Self-Attention
-  ↓
+        ↓
 Residual Connection
-  ↓
+        ↓
 Layer Normalization
-  ↓
+        ↓
 Feed Forward Network
-  ↓
-Residual Connection
-  ↓
-Layer Normalization
-  ↓
+        ↓
 Global Average Pooling
-  ↓
-Dense
-  ↓
+        ↓
 Sigmoid
-  ↓
+        ↓
 Probability of Upward Movement
 ```
 
-The Transformer uses self-attention to learn relationships between
-different time steps in the 20-day sequence.
-
----
-
-## Model Evaluation
-
-Final Transformer performance:
-
-| Metric | Validation | Test |
-|---|---:|---:|
-| Accuracy | 0.6129 | 0.4921 |
-| AUC | 0.7523 | **0.7516** |
-
-Because the final system uses probability outputs to rank stocks,
-AUC is an important evaluation metric in addition to classification accuracy.
-
-The project therefore focuses on:
-
-```text
-Probability Ranking
-        +
-Directional Discrimination
-        +
-Out-of-Sample Evaluation
-```
-
-rather than interpreting a single classification threshold as the entire
-model performance.
+Transformer 能透過 Self-Attention 學習不同交易日之間的關係，
+並輸出未來價格方向的機率。
 
 ---
 
 ## Full-Market Screening
 
-The system was extended from single-stock prediction to full-market screening.
+系統除了單一股票預測，也能進行全市場掃描。
 
-In a full-market system test:
+一次完整測試結果：
 
 ```text
-Stock Pool:          1,879
-Market Data Loaded:  1,879
-Successful Prediction: 1,837
+Stock Pool:             1,879
+Successful Prediction:  1,837
 ```
 
-The model generates:
+模型會將股票分類為：
 
 ```text
 LONG
@@ -348,32 +199,28 @@ NEUTRAL
 SHORT
 ```
 
-predictions for individual stocks.
-
-Stocks with the strongest probabilities are then ranked to generate:
+並依預測機率選出：
 
 ```text
 Top 5 LONG Candidates
 Top 5 SHORT Candidates
 ```
 
-The final ranking can be automatically sent through LINE Bot.
+最後透過 LINE Bot 自動產生每日短線量化結果。
 
 ---
 
 ## LINE Bot Integration
 
-The system supports two main LINE Bot functions.
-
 ### Single Stock Query
 
-The user sends a Taiwan stock code:
+User input:
 
 ```text
 8114
 ```
 
-The system automatically returns information such as:
+Example output:
 
 ```text
 8114 振樺電
@@ -387,9 +234,7 @@ The system automatically returns information such as:
 停利：186.66
 ```
 
-### Daily Market Ranking
-
-The system can also generate a market-wide ranking:
+### Daily Ranking
 
 ```text
 每日短線量化 Top 5
@@ -398,7 +243,7 @@ The system can also generate a market-wide ranking:
 
 Stock
 Current Price
-Probability
+Model Probability
 Entry
 Stop Loss
 Take Profit
@@ -407,211 +252,45 @@ Take Profit
 
 Stock
 Current Price
-Probability
+Model Probability
 Entry
 Stop Loss
 Take Profit
 ```
 
-This allows model predictions to be delivered through a practical
-user interface instead of remaining only inside a Jupyter Notebook.
-
----
-
-## Risk Management
-
-In addition to model direction probabilities,
-the system calculates reference trading levels such as:
-
-```text
-Entry Price
-Stop Loss
-Take Profit
-```
-
-The purpose is to extend the model from pure classification toward
-a more complete quantitative decision-support workflow.
-
-These values are reference outputs for model demonstration and are not
-intended to represent guaranteed trading returns.
-
----
-
-## Data Pipeline
-
-The production workflow combines multiple data sources.
-
-```text
-Individual Stock Prices
-        +
-TAIEX Market Data
-        +
-Institutional Trading Data
-        ↓
-Date Alignment
-        ↓
-Feature Engineering
-        ↓
-Missing Value Handling
-        ↓
-Feature Scaling
-        ↓
-20-Day Sequence
-        ↓
-Transformer Prediction
-```
-
-The system also checks the latest available common trading date to reduce
-date mismatches between price data and institutional data.
+這使模型不只停留在 Notebook，
+而是能透過實際介面提供量化分析結果。
 
 ---
 
 ## System Architecture
 
 ```text
-             ┌───────────────────────┐
-             │ Taiwan Stock Market   │
-             │ Price Data            │
-             └──────────┬────────────┘
-                        │
-             ┌──────────▼────────────┐
-             │ TAIEX Market Data     │
-             └──────────┬────────────┘
-                        │
-             ┌──────────▼────────────┐
-             │ Institutional Data    │
-             │ Foreign / Investment  │
-             │ Trust                 │
-             └──────────┬────────────┘
-                        │
-             ┌──────────▼────────────┐
-             │ Feature Engineering   │
-             │ 16 Features           │
-             └──────────┬────────────┘
-                        │
-             ┌──────────▼────────────┐
-             │ Standardization       │
-             └──────────┬────────────┘
-                        │
-             ┌──────────▼────────────┐
-             │ 20-Day Sequence       │
-             └──────────┬────────────┘
-                        │
-             ┌──────────▼────────────┐
-             │ Transformer Model     │
-             └──────────┬────────────┘
-                        │
-             ┌──────────▼────────────┐
-             │ Probability Output    │
-             │ LONG / NEUTRAL / SHORT│
-             └──────────┬────────────┘
-                        │
-             ┌──────────▼────────────┐
-             │ Risk Management       │
-             │ Entry / SL / TP       │
-             └──────────┬────────────┘
-                        │
-             ┌──────────▼────────────┐
-             │ FastAPI               │
-             └──────────┬────────────┘
-                        │
-             ┌──────────▼────────────┐
-             │ LINE Bot              │
-             └───────────────────────┘
-```
-
----
-
-## Cloud Deployment
-
-The project was designed for containerized deployment.
-
-Technologies used in the deployment workflow include:
-
-```text
+Market Data
+    ↓
+Feature Engineering
+    ↓
+Transformer
+    ↓
+Probability Prediction
+    ↓
+LONG / NEUTRAL / SHORT
+    ↓
 FastAPI
-Uvicorn
-Docker
-Google Cloud Run
-Google Cloud Storage
-LINE Messaging API
-```
-
-The API can be started using:
-
-```bash
-uvicorn main:app --host 0.0.0.0 --port 8080
-```
-
-Google Cloud Storage is used to support data persistence required by the
-deployed analysis workflow.
-
----
-
-## Security
-
-Sensitive credentials are not intended to be stored directly in
-the public source code.
-
-The application reads sensitive configuration from environment variables,
-for example:
-
-```python
-import os
-
-token = os.getenv("LINE_CHANNEL_ACCESS_TOKEN")
-```
-
-Sensitive information such as the following should never be committed:
-
-```text
-LINE Channel Access Token
-LINE Channel Secret
-API Keys
-Cloud Credentials
-.env
+    ↓
+LINE Bot
+    ↓
+Google Cloud
 ```
 
 ---
 
 ## Technologies
 
-### Programming & Data Analysis
-
-- Python
-- Pandas
-- NumPy
-- Matplotlib
-- Scikit-learn
-- Joblib
-
-### Machine Learning
-
-- Logistic Regression
-- XGBoost
-
-### Deep Learning
-
-- TensorFlow / Keras
-- GRU
-- Attention
-- Transformer
-
-### Financial Data
-
-- yfinance
-- Taiwan stock market data
-- TAIEX
-- Institutional trading data
-
-### Backend & Deployment
-
-- FastAPI
-- Uvicorn
-- LINE Messaging API
-- Docker
-- Google Cloud Run
-- Google Cloud Storage
+`Python` · `Pandas` · `NumPy` · `Scikit-learn` · `XGBoost`  
+`TensorFlow / Keras` · `GRU` · `Transformer`  
+`FastAPI` · `LINE Messaging API` · `Docker`  
+`Google Cloud Run` · `Google Cloud Storage` · `yfinance`
 
 ---
 
@@ -621,124 +300,44 @@ Cloud Credentials
 stock-quant-linebot/
 │
 ├── README.md
-│
 ├── .gitignore
-│
 ├── quant_analy.ipynb
-│
 ├── linebot_single_stock.png
-│
 ├── linebot_top5.png
 └── linebot_QRcode.png
 ```
 
-### `quant_analy.ipynb`
-
-The notebook contains the complete project development process, including:
-
-```text
-Data Collection
-Technical Analysis
-Feature Engineering
-Institutional Data Processing
-Backtesting
-Logistic Regression
-XGBoost
-GRU
-GRU + Attention
-Transformer
-Model Comparison
-Test Evaluation
-Full-Market Prediction
-LINE Bot Integration
-FastAPI
-Cloud Deployment
-```
-
----
-
-## Key Challenges
-
-Several practical issues were addressed during project development.
-
-### 1. Time-Series Data Leakage
-
-Financial models are sensitive to future information leakage.
-
-Therefore, the project uses chronological train / validation / test
-splitting rather than random shuffling for time-series evaluation.
-
-### 2. Multiple Data Sources
-
-Price data, market index data, and institutional trading data may not
-always share the exact same available date.
-
-The pipeline therefore aligns data dates before prediction.
-
-### 3. Model Generalization
-
-A model with strong validation performance does not necessarily maintain
-the same performance on unseen test data.
-
-This was observed during the comparison between GRU and Transformer,
-which motivated the use of an independent Test Set for final model selection.
-
-### 4. Model-to-Application Integration
-
-Instead of ending the project after model training,
-the model was integrated into:
-
-```text
-Prediction
-→ API
-→ LINE Bot
-→ Cloud Deployment
-```
-
-to build a usable end-to-end system.
+`quant_analy.ipynb` contains the complete development process, including
+data collection, feature engineering, model comparison, Transformer modeling,
+full-market prediction, LINE Bot integration, and cloud deployment.
 
 ---
 
 ## What I Learned
 
-This project allowed me to integrate concepts from statistics,
-machine learning, deep learning, finance, and software engineering.
+Through this project, I integrated financial time-series analysis,
+machine learning, deep learning, and software deployment into one system.
 
-Key learning outcomes include:
+The key learning outcome was moving from a standalone prediction model to
+an **End-to-End quantitative analysis application**:
 
-- Designing features for financial time-series data
-- Constructing prediction targets without future-data leakage
-- Evaluating models with chronological validation
-- Comparing traditional machine learning and deep learning models
-- Understanding the difference between Accuracy and ROC-AUC
-- Working with sequential models such as GRU and Transformer
-- Integrating technical and institutional market information
-- Building a full-market screening pipeline
-- Developing REST APIs with FastAPI
-- Connecting machine learning predictions to LINE Bot
-- Managing sensitive credentials using environment variables
-- Containerizing applications with Docker
-- Deploying a quantitative analysis workflow to the cloud
-
-The most important outcome of this project was moving from a standalone
-prediction model to a complete quantitative analysis system.
+```text
+Data
+→ Feature Engineering
+→ Model
+→ Evaluation
+→ API
+→ LINE Bot
+→ Cloud Deployment
+```
 
 ---
 
 ## Future Improvements
 
-Possible future extensions include:
-
-- Expanding the training universe
-- Longer out-of-sample testing periods
-- Walk-forward validation
-- Probability calibration
-- Additional market and fundamental features
-- Transaction cost and slippage simulation
-- Portfolio-level backtesting
-- Position sizing
-- Improved risk management
-- Model monitoring and periodic retraining
+Future work may include walk-forward validation, longer out-of-sample testing,
+transaction cost and slippage simulation, probability calibration,
+portfolio-level backtesting, and model retraining.
 
 ---
 
@@ -747,7 +346,5 @@ Possible future extensions include:
 This project is developed for academic, research, and portfolio demonstration
 purposes only.
 
-The model probabilities, LONG / SHORT signals, entry prices, stop-loss levels,
-and take-profit levels do **not** constitute investment advice.
-
+The model probabilities and trading signals do not constitute investment advice.
 Past model performance does not guarantee future investment results.
