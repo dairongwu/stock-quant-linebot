@@ -27,7 +27,7 @@ LINE Bot, and cloud deployment.
 
 ## Try the LINE Bot
 
-You can add the LINE Bot and test the quantitative analysis system.
+Linebot QRcode.
 
 ![LINE Bot QR Code](linebot_QRcode.png)
 
