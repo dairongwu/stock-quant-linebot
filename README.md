@@ -25,6 +25,12 @@ LINE Bot, and cloud deployment.
 
 ![Daily Top 5](linebot_top5.png)
 
+## Try the LINE Bot
+
+Click the link below to add the LINE Bot and test the quantitative analysis system.
+
+[Add LINE Bot](你的LINE加好友連結)
+
 ## Project Overview
 
 The system consists of four main stages:
