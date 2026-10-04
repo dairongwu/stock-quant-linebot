@@ -359,3 +359,9 @@ purposes only.
 
 The model probabilities and trading signals do not constitute investment advice.
 Past model performance does not guarantee future investment results.
+
+---
+
+## Project Report Link
+
+[View Full Project Report on Google Drive](https://drive.google.com/drive/folders/1FG0RotUS1tanY0KZiaMs6lOMX-_vSlx?dmr=1&ec=wgc-drive-hero-goto)
