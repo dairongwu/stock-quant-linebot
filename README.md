@@ -11,6 +11,20 @@ LINE Bot, and cloud deployment.
 
 ---
 
+## Demo
+
+### Single Stock Analysis
+
+輸入股票代號後，系統即時回傳模型預測方向、機率與風險管理參考資訊。
+
+![Single Stock Analysis](images/linebot_single_stock.png)
+
+### Daily Quantitative Ranking
+
+系統可掃描台股市場，依模型預測機率產生每日短線 Top 5 候選股票。
+
+![Daily Top 5](images/linebot_top5.png)
+
 ## Project Overview
 
 The system consists of four main stages:
