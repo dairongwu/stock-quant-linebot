@@ -335,9 +335,20 @@ Data
 
 ## Future Improvements
 
-Future work may include walk-forward validation, longer out-of-sample testing,
-transaction cost and slippage simulation, probability calibration,
-portfolio-level backtesting, and model retraining.
+Future work will focus on both model performance and system usability.
+
+Planned improvements include:
+
+- Fixing remaining bugs in the analysis and LINE Bot workflow
+- Improving UI/UX and message readability
+- Improving system stability and error handling
+- Walk-forward validation
+- Longer out-of-sample testing
+- Transaction cost and slippage simulation
+- Probability calibration
+- Portfolio-level backtesting
+- Automatic model retraining
+- Improving prediction robustness across different market conditions
 
 ---
 
